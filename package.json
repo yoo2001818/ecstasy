@@ -1,0 +1,27 @@
+{
+  "name": "ecstasy",
+  "version": "0.0.1",
+  "description": "A fast Entity-Component-System framework for Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoo2001818/ecstasy.git"
+  },
+  "keywords": [
+    "ecs",
+    "component",
+    "entity",
+    "system",
+    "framework",
+    "game"
+  ],
+  "author": "Kkiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yoo2001818/ecstasy/issues"
+  },
+  "homepage": "https://github.com/yoo2001818/ecstasy"
+}
