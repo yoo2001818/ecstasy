@@ -57,4 +57,13 @@ describe('Entity', function() {
       entity.remove('test');
     });
   });
+  describe('#has()', function() {
+    beforeEach(function() {
+      entity.c('test', {});
+    });
+    it('should has if there is component in entity', function() {
+      assert.equal(true, entity.has('test'));
+      assert.equal(false, entity.has('test2'));
+    });
+  });
 });
