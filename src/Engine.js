@@ -250,14 +250,14 @@ Engine.prototype.updateComponentGroup = function(entity) {
  * @see Entity
  */
 Engine.prototype.registerComponentGroup = function(componentGroup) {
+  if(componentGroup.id != null && 
+      this._componentGroups[componentGroup.id] == componentGroup) {
+    return this._componentGroupEntities[componentGroup.id];
+  }
   for(var i = 0 ; i < this._componentGroups.length; ++i) {
     if(this._componentGroups[i].equals(componentGroup)) {
       return this._componentGroupEntities[i];
     }
-  }
-  if(componentGroup.id != null && 
-      this._componentGroups[componentGroup.id] == componentGroup) {
-    return this._componentGroupEntities[componentGroup.id];
   }
   componentGroup.id = this._componentGroups.length;
   componentGroup._engine = this;
