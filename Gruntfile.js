@@ -22,7 +22,7 @@ module.exports = function(grunt) {
           reporter: 'spec',
           require: (function() {  
             var path = require('path');
-            var srcDir = path.join(__dirname, '..', 'src');
+            var srcDir = path.join(__dirname, 'src');
 
             return require('blanket')({
               // Only files that match the pattern will be instrumented
@@ -50,8 +50,8 @@ module.exports = function(grunt) {
       }
     },
     coveralls: {
+      src: 'coverage/lcov.info',
       options: {
-        src: 'coverage/lcov.info',
         force: true
       }
     }
