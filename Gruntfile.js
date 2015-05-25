@@ -15,11 +15,53 @@ module.exports = function(grunt) {
         src: 'index.js',
         dest: 'build/<%= pkg.name %>.js'
       }
+    },
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec',
+          require: (function() {  
+            var path = require('path');
+            var srcDir = path.join(__dirname, '..', 'src');
+
+            return require('blanket')({
+              // Only files that match the pattern will be instrumented
+              pattern: srcDir
+            });
+          })()
+        },
+        src: ['test/**/*.js']
+      },
+      'html-cov': {
+        options: {
+          reporter: 'html-cov',
+          quiet: true,
+          captureFile: 'coverage/coverage.html'
+        },
+        src: ['test/**/*.js']
+      },
+      'lcov': {
+        options: {
+          reporter: 'mocha-lcov-reporter',
+          quiet: true,
+          captureFile: 'coverage/lcov.info'
+        },
+        src: ['test/**/*.js']
+      }
+    },
+    coveralls: {
+      options: {
+        src: 'coverage/lcov.info',
+        force: true
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-coveralls');
 
   grunt.registerTask('default', ['browserify', 'uglify']);
+  grunt.registerTask('test', ['mochaTest', 'coveralls']);
 };

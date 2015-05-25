@@ -4,7 +4,7 @@
   "description": "A fast Entity-Component-System framework",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js; mocha"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,8 @@
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",
     "grunt-contrib-uglify": "^0.9.1",
+    "grunt-coveralls": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
     "mocha": "^2.2.5",
     "mocha-lcov-reporter": "0.0.2"
   },
