@@ -117,7 +117,11 @@ BitSet.prototype.setRange = function(from, to, set) {
  * @param set {Boolean} - The value to set.
  */
 BitSet.prototype.setAll = function(set) {
-  this.setRange(0, this.size()-1, set);
+  var val = 0;
+  if(set) val = ~0;
+  for(var i = 0; i < this._words.length; ++i) {
+    this._words[i] = val;
+  }
 }
 
 /**
