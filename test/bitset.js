@@ -49,6 +49,7 @@ describe('BitSet', function() {
   });
   describe('#get()', function() {
     it('should get specified bit correctly', function() {
+      bitset.and();
       bitset.not();
       for(var i = 0; i < 64; ++i) {
          assert.equal(bitset.get(i), true, 'position ' + i);
@@ -67,11 +68,10 @@ describe('BitSet', function() {
   });
   describe('#setRange()', function() {
     it('should set specified range of bits', function() {
-      assert.equal(bitset.get(31), false);
-      assert.equal(bitset.get(36), false);
-      bitset.setRange(31, 36, true);
-      assert.equal(bitset.get(31), true);
-      assert.equal(bitset.get(36), true);
+      bitset.setRange(0, 127, true);
+      for(var i = 0; i < 128; ++i) {
+         assert.equal(bitset.get(i), true, 'position ' + i);
+      }
     });
   });
   describe('#setAll()', function() {
@@ -138,7 +138,7 @@ describe('BitSet', function() {
     it('should set to bigger one where exceeds intersection size', function() {
       other.setRange(0, 128, true);
       bitset.or(other);
-      for(var i = 64; i <= 128; ++i) {
+      for(var i = 0; i <= 128; ++i) {
         assert.equal(bitset.get(i), true, 'position ' + i);
       }
     });

@@ -40,7 +40,7 @@ function BitSet(value) {
  * @param bitSize {Number} - the requested bit size.
  */
 BitSet.prototype._reallocate = function(bitSize) {
-  while(this._words.length < ((bitSize / BITS_PER_WORD)|0)) {
+  while(this._words.length <= ((bitSize / BITS_PER_WORD)|0)) {
     var newWords = new Uint32Array(this._words.length * 2);
     newWords.set(this._words);
     this._words = newWords;
@@ -130,7 +130,7 @@ BitSet.prototype.get = function(pos) {
   this._reallocate(pos);
   var wordPos = pos / BITS_PER_WORD | 0;
   var shiftPos = (pos % BITS_PER_WORD);
-  return (this._words[wordPos] & (1 << shiftPos)) > 0;
+  return (this._words[wordPos] & (1 << shiftPos)) != 0;
 }
 
 // logic functions
@@ -172,17 +172,10 @@ BitSet.prototype.or = function(set) {
   if(set == null) {
     return;
   }
-  var intersectSize = Math.min(this._words.length, set._words.length)|0;
   var unionSize = Math.max(this._words.length, set._words.length)|0;
-  this._reallocate(unionSize * BITS_PER_WORD);
+  this._reallocate(unionSize * BITS_PER_WORD-1);
   for(var i = 0; i < unionSize; ++i) {
-    if(i > intersectSize) {
-      if(this._words.length < set._words.length) {
-        this._words[i] = set._words[i];
-      }
-    } else {
-      this._words[i] |= set._words[i];
-    }
+    this._words[i] |= set._words[i];
   }
 }
 
@@ -198,17 +191,10 @@ BitSet.prototype.xor = function(set) {
   if(set == null) {
     return;
   }
-  var intersectSize = Math.min(this._words.length, set._words.length)|0;
   var unionSize = Math.max(this._words.length, set._words.length)|0;
-  this._reallocate(unionSize * BITS_PER_WORD);
+  this._reallocate(unionSize * BITS_PER_WORD-1);
   for(var i = 0; i < unionSize; ++i) {
-    if(i > intersectSize) {
-      if(this._words.length < set._words.length) {
-        this._words[i] = set._words[i];
-      }
-    } else {
-      this._words[i] ^= set._words[i];
-    }
+    this._words[i] ^= set._words[i];
   }
 }
 
