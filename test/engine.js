@@ -93,19 +93,24 @@ describe('Engine', function() {
       engine.addEntity(entity);
       assert.equal(0, entity.id);
     });
-    it('should add event listeners after adding', function() {
+    it('should add event listeners', function() {
       engine.addEntity(entity);
       assert(entity.listeners('componentAdded').length == 1);
       assert(entity.listeners('componentRemoved').length == 1);
     });
-    it('should emit entityAdded after adding', function(done) {
+    it('should emit entityAdded', function(done) {
       engine.on('entityAdded', function(e) {
         assert(entity, e);
         done();
       });
       engine.addEntity(entity);
     });
-    // TODO componentGroups
+    it('should add to componentGroups', function() {
+      var entities = engine.e('hello');
+      entity.add('hello', {});
+      engine.addEntity(entity);
+      assert.equal(entity, entities[0]);
+    });
   });
   describe('#createEntity()', function() {
     it('should return entity with id', function() {
@@ -136,12 +141,35 @@ describe('Engine', function() {
       });
       engine.removeEntity(entity);
     });
-    it('should remove event listeners after removing', function() {
+    it('should remove event listeners', function() {
       engine.removeEntity(entity);
       assert(entity.listeners('componentAdded').length == 0);
       assert(entity.listeners('componentRemoved').length == 0);
     });
-    // TODO componentGroups
+    it('should remove from componentGroups', function() {
+      var entities = engine.e('hello');
+      entity.add('hello', {});
+      assert.equal(entity, entities[0]);
+      engine.removeEntity(entity);
+      assert.equal(null, entities[0]);
+    });
+  });
+  describe('#e()', function() {
+    var entity;
+    beforeEach(function() {
+      engine.c('test', function() {});
+      entity = engine.e().c('test', {});
+    });
+    it('should create new entity if there is no arguments', function() {
+      assert.equal(1, engine.e().id);
+      assert(engine.e() instanceof ecstasy.Entity);
+    });
+    it('should get an entity with that id if a number is given', function() {
+      assert.equal(entity, engine.e(0));
+    });
+    it('should call getEntitiesFor otherwise', function() {
+      assert.deepEqual([entity], engine.e('test'));
+    });
   });
   describe('#removeAllEntities()', function() {
     var entity;
@@ -187,6 +215,22 @@ describe('Engine', function() {
       assert.deepEqual([entity], engine.registerComponentGroup(group));
       assert.deepEqual([], engine.registerComponentGroup(group2));
     });
+    it('should not register duplicate instances', function() {
+      var p1 = engine.registerComponentGroup(group);
+      var p2 = engine.registerComponentGroup(group);
+      assert.deepEqual([entity], p1);
+      assert.deepEqual([entity], p2);
+      assert.equal(p1, p2);
+    });
+    it('should not register different duplicate instances', function() {
+      var groupDup = ecstasy.ComponentGroup.createBuilder(engine)
+        .contain('test').build();
+      var p1 = engine.registerComponentGroup(group);
+      var p2 = engine.registerComponentGroup(groupDup);
+      assert.deepEqual([entity], p1);
+      assert.deepEqual([entity], p2);
+      assert.equal(p1, p2);
+    });
     it('should set id of ComponentGroup', function() {
       engine.registerComponentGroup(group);
       engine.registerComponentGroup(group2);
@@ -229,6 +273,38 @@ describe('Engine', function() {
       assert.equal(group, engine.getComponentGroup(entities));
     });
   });
+  describe('#updateComponentGroup()', function() {
+    var entity, entities;
+    beforeEach(function() {
+      entity = engine.e();
+      entities = engine.e('test');
+    });
+    it('should add to componentGroups if matches', function() {
+      entity.add('test', {});
+      assert.equal(entity, entities[0]);
+    });
+    it('should remove from componentGroups if not matches anymore', function() {
+      entity.add('test', {});
+      assert.equal(entity, entities[0]);
+      entity.remove('test');
+      assert.equal(null, entities[0]);
+    });
+  });
+  describe('#s()', function() {
+    it('should return SystemBuilder if that key doesn\'t exist', function() {
+      assert(engine.s('test') instanceof ecstasy.SystemBuilder);
+    });
+    it('should return the System if that key exists', function() {
+      var system = {};
+      engine.addSystem('test', system);
+      assert.equal(system, engine.s('test'));
+    });
+    it('should add the System otherwise', function() {
+      var system = {};
+      engine.s('test', system);
+      assert.equal(system, engine.s('test'));
+    });
+  });
   describe('#addSystem()', function() {
     var system;
     beforeEach(function() {
@@ -244,6 +320,10 @@ describe('Engine', function() {
         done();
       }
       engine.addSystem('key', system);
+    });
+    it('should set _systemsSortRequired', function() {
+      engine.addSystem('key', system);
+      assert(engine._systemsSortRequired);
     });
   });
   describe('#createSystem()', function() {
@@ -277,6 +357,58 @@ describe('Engine', function() {
         done();
       }
       engine.removeSystem('key');
+    });
+  });
+  describe('#sortSystem()', function() {
+    var system1, system2, system3;
+    beforeEach(function() {
+      system1 = {priority: 0};
+      system2 = {priority: 0};
+      system3 = {priority: 0};
+      system4 = {priority: 100};
+    });
+    it('should sort the systems array in right order', function() {
+      engine.addSystem('4', system4);
+      engine.addSystem('3', system3);
+      engine.addSystem('2', system2);
+      engine.addSystem('1', system1);
+      engine.sortSystems();
+      assert.equal(system3, engine.systems[0]);
+      assert.equal(system2, engine.systems[1]);
+      assert.equal(system1, engine.systems[2]);
+      assert.equal(system4, engine.systems[3]);
+    });
+    it('should sort the systems array in right order', function() {
+      engine.addSystem('1', system1);
+      engine.addSystem('2', system2);
+      engine.addSystem('3', system3);
+      engine.addSystem('4', system4);
+      engine.sortSystems();
+      assert.equal(system1, engine.systems[0]);
+      assert.equal(system2, engine.systems[1]);
+      assert.equal(system3, engine.systems[2]);
+      assert.equal(system4, engine.systems[3]);
+    });
+    it('should sort the systems array in right order', function() {
+      engine.addSystem('1', system1);
+      engine.addSystem('2', system2);
+      engine.addSystem('3', system3);
+      system1._id = 2;
+      system3._id = 0;
+      engine.sortSystems();
+      assert.equal(system3, engine.systems[0]);
+      assert.equal(system2, engine.systems[1]);
+      assert.equal(system1, engine.systems[2]);
+    });
+    it('should sort the systems array in right order', function() {
+      engine.addSystem('1', system1);
+      engine.addSystem('2', system2);
+      engine.addSystem('3', system3);
+      system2._id = 0;
+      engine.sortSystems();
+      assert.equal(system1, engine.systems[0]);
+      assert.equal(system2, engine.systems[1]);
+      assert.equal(system3, engine.systems[2]);
     });
   });
   describe('#update()', function() {
