@@ -36,18 +36,18 @@ ActionEngine.prototype.constructor = ActionEngine;
     engine.a(action)
  */
 
-ActionEngine.prototype.a = function(name, player, entity, options) {
+ActionEngine.prototype.a = function(name, entity, player, options) {
   if(typeof name !== 'string') {
     return this.runAction(name);
   }
-  if(arguments.length == 2 && typeof player == 'function') {
-    return this.defineAction(name, player);
+  if(arguments.length == 2 && typeof entity == 'function') {
+    return this.defineAction(name, entity);
   }
-  return this.createAction(name, player, entity, options);
+  return this.createAction(name, entity, player, options);
 }
 
-ActionEngine.prototype.aa = function(name, player, entity, options) {
-  return this.runAction(this.createAction(name, player, entity, options));
+ActionEngine.prototype.aa = function(name, entity, player, options) {
+  return this.runAction(this.createAction(name, entity, player, options));
 }
 
 ActionEngine.prototype.defineAction = function(name, constructor) {
@@ -58,8 +58,8 @@ ActionEngine.prototype.getActionConstructor = function(name) {
   return this._actions[name];
 }
 
-ActionEngine.prototype.createAction = function(name, player, entity, options) {
-  return new (this.getActionConstructor(name))(player, entity, options);
+ActionEngine.prototype.createAction = function(name, entity, player, options) {
+  return new (this.getActionConstructor(name))(this, entity, player, options);
 }
 
 ActionEngine.prototype.getTurn = function() {
