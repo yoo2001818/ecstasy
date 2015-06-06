@@ -446,4 +446,45 @@ describe('Engine', function() {
       engine.update(12);
     });
   });
+  describe('#serialize()', function() {
+    it('should serialize engine correctly', function() {
+      // I don't think systems and components should be serialized
+      engine.c('test', function() {this.data = '11'});
+      engine.e().c('test', {});
+      assert.deepEqual({
+        entities: [
+          {
+            id: 0,
+            components: {
+              'test': {
+                data: '11'
+              }
+            }
+          }
+        ],
+        entityPos: 1
+      }, engine.serialize());
+    });
+  });
+  describe('#deserialize()', function() {
+    it('should deserialize engine correctly', function() {
+      engine.c('test', function() {this.data = '11'});
+      engine.deserialize({
+        entities: [
+          {
+            id: 0,
+            components: {
+              'test': {
+                data: '11'
+              }
+            }
+          }
+        ],
+        entityPos: 1
+      });
+      assert.deepEqual({
+        data: '11'
+      }, engine.e(0).c('test'));
+    });
+  });
 });

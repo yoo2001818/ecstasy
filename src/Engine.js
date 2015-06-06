@@ -434,6 +434,24 @@ Engine.prototype.serialize = function() {
   return obj;
 }
 
+/**
+ * Deserializes the Engine object and places on provided engine.
+ * The provided Engine object should be clean; it shouldn't contain any
+ * Entity object. But it can contain pre-defined Components and Systems.
+ * Note that systems won't be included in serialized object, so user should
+ * load the systems on their own.
+ * @param {Object} serialized Engine object
+ */
+Engine.prototype.deserialize = function(data) {
+  this.removeAllEntities();
+  // Add entities and resets entityPos
+  data.entities.forEach(function(v) {
+    var entity = Entity.deserialize(this, v);
+    this.addEntity(entity);
+  }, this);
+  this._entityPos = data.entityPos;
+}
+
 if(typeof module !== 'undefined') {
   module.exports = Engine;
 }
