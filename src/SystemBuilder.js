@@ -6,10 +6,14 @@ function SystemBuilder(key, engine) {
   this.engine = engine;
   this.key = key;
   this.system = {};
+  if(engine && key) {
+    engine.addSystem(key, this.system);
+  }
 }
 
 SystemBuilder.prototype.add = function(callback) {
   this.system.add = callback;
+  callback.call(this.system, this.engine);
   return this;
 }
 
@@ -60,11 +64,11 @@ SystemBuilder.prototype.sendAction = function(callback) {
   return this;
 }
 
-// Done
+// Done, deprecated.
 SystemBuilder.prototype.done = function() {
-  if(this.engine && this.key) {
+  /* if(this.engine && this.key) {
     this.engine.addSystem(this.key, this.system);
-  }
+  } */
   return this.system;
 }
 

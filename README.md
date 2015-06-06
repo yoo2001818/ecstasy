@@ -37,7 +37,7 @@ engine.s('vel').add(function(engine) {
     entity.c('pos').x += entity.c('vel').x;
     entity.c('pos').y += entity.c('vel').y;
   });
-}).done();
+});
 
 // Define entities
 engine.e()
