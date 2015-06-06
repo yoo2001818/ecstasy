@@ -120,6 +120,11 @@ Entity.prototype.has = function(key) {
   return this.componentBits.get(bitPos);
 }
 
+/**
+ * Serializes the Entity object.
+ * Components should be serializable in order to do this.
+ * @return {Object} serialized Entity object
+ */
 Entity.prototype.serialize = function() {
   var obj = {};
   obj.id = this.id;
@@ -131,6 +136,12 @@ Entity.prototype.serialize = function() {
   return obj;
 }
 
+/**
+ * Returns new deserialized Entity object.
+ * @param engine {Engine} the Engine object
+ * @param data {Object} serialized Entity object
+ * @return {Entity} the Entity object
+ */
 Entity.deserialize = function(engine, data) {
   var entity = new Entity(engine);
   entity.id = data.id;
