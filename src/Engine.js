@@ -84,6 +84,15 @@ Engine.prototype.getComponentBit = function(key) {
 }
 
 /**
+ * Returns {@link Component} type's key by its unique ID.
+ * @param key {Number} - {@link Component}'s unique ID
+ * @return the Component's string key.
+ */
+Engine.prototype.getComponentName = function(key) {
+  return this._components[key];
+}
+
+/**
  * Returns a BitSet holding combination of {@link Component}s type's unique ID.
  * @param components {Array} - An array holding {@link Component} keys.
  * @return {BitSet} A BitSet holding combination of Components.

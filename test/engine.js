@@ -47,6 +47,16 @@ describe('Engine', function() {
       }
     });
   });
+  describe('#getComponentName()', function() {
+    it('should return name correctly', function() {
+      for(var i = 0; i < 100; ++i) {
+        engine.c("c_"+i, "c_"+i);
+      }
+      for(var i = 0; i < 100; ++i) {
+        assert.equal("c_"+i, engine.getComponentName(i));
+      }
+    });
+  });
   describe('#getComponentsBitSet()', function() {
     var valid, componentSet;
     beforeEach(function() {

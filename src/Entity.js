@@ -120,6 +120,26 @@ Entity.prototype.has = function(key) {
   return this.componentBits.get(bitPos);
 }
 
+Entity.prototype.serialize = function() {
+  var obj = {};
+  obj.id = this.id;
+  obj.components = {};
+  for(var key in this.components) {
+    var name = this._engine.getComponentName(key);
+    obj.components[name] = this.components[key];
+  }
+  return obj;
+}
+
+Entity.deserialize = function(engine, data) {
+  var entity = new Entity(engine);
+  entity.id = data.id;
+  for(var name in data.components) {
+    entity.c(name, data.components[name]);
+  }
+  return entity;
+}
+
 if(typeof module !== 'undefined') {
   module.exports = Entity;
 }

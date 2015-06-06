@@ -66,4 +66,33 @@ describe('Entity', function() {
       assert.equal(false, entity.has('test2'));
     });
   });
+  describe('#serialize()', function() {
+    beforeEach(function() {
+      entity.c('test', {});
+    });
+    it('should return correctly serialized object', function() {
+      assert.deepEqual(entity.serialize(), {
+        id: 0,
+        components: {
+          'test': {
+            data: '11'
+          }
+        }});
+    });
+  });
+  describe('#deserialize()', function() {
+    it('should correctly deserialize object', function() {
+      var data = {
+        id: 0,
+        components: {
+          'test': {
+            data: '11'
+          }
+        }
+      };
+      var ent = ecstasy.Entity.deserialize(engine, data);
+      assert.equal(ent.id, 0);
+      assert.deepEqual(data.components['test'], ent.c('test'));
+    });
+  });
 });
