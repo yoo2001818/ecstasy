@@ -122,8 +122,14 @@ Engine.prototype.obtainEntityId = function() {
  * @fires ComponentGroup#entityAdded
  */
 Engine.prototype.addEntity = function(entity) {
-  if(entity.id != null) return;
-  entity.id = this.obtainEntityId();
+  if(entity.id != null) {
+    // Already have an entity with that id
+    if(this._entities[entity.id]) return;
+    // Engine is not defined
+    if(entity._engine != this) return;
+  } else {
+    entity.id = this.obtainEntityId();
+  }
   entity._engine = this;
   this._entities[entity.id] = entity;
   this._entitiesArray.push(entity);
@@ -411,6 +417,21 @@ Engine.prototype.update = function(delta) {
       system.update(delta);
     }
   })
+}
+
+/**
+ * Serializes the Engine object.
+ * Note that systems won't be included in serialized object, so user should
+ * load the systems on their own.
+ * @return {Object} serialized Engine object
+ */
+Engine.prototype.serialize = function() {
+  var obj = {};
+  obj.entities = this._entitiesArray.map(function(v) {
+    return v.serialize();
+  });
+  obj.entityPos = this._entityPos;
+  return obj;
 }
 
 if(typeof module !== 'undefined') {

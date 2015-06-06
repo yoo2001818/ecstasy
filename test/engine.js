@@ -103,6 +103,17 @@ describe('Engine', function() {
       engine.addEntity(entity);
       assert.equal(0, entity.id);
     });
+    it('should add entity with defined entity id', function() {
+      var entity2 = new ecstasy.Entity(engine);
+      entity2.id = 3;
+      engine.addEntity(entity2);
+      assert(entity2.listeners('componentAdded').length == 1);
+      assert(entity2.listeners('componentRemoved').length == 1);
+      entity.id = 6;
+      engine.addEntity(entity);
+      assert(entity.listeners('componentAdded').length == 1);
+      assert(entity.listeners('componentRemoved').length == 1);
+    });
     it('should add event listeners', function() {
       engine.addEntity(entity);
       assert(entity.listeners('componentAdded').length == 1);
