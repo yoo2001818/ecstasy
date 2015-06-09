@@ -16,6 +16,7 @@ function ActionEngine(isServer) {
    */
   this.isServer = isServer || false;
   this._actions = {};
+  this._actionQueue = [];
 }
 
 ActionEngine.prototype = Object.create(Engine.prototype);
@@ -88,6 +89,7 @@ ActionEngine.prototype.runAction = function(action) {
       return;
     }
   }
+  var firstCall = this._actionQueue.length == 0;
   /**
    * This event is fired before the action executes.
    * @event ActionEngine#preAction
@@ -102,19 +104,29 @@ ActionEngine.prototype.runAction = function(action) {
   if(turn) {
     turn.addAction(action);
   }
-  action.run(this);
-  /**
-   * This event is fired when the action executes.
-   * @event TurnEngine#action
-   * @property {Turn} 0 - The current Turn.
-   * @property {Action} 1 - The Action object.
-   */
-  this.emit('action', turn, action, this);
-  this.systems.forEach(function(system) {
-    if(system.action) {
-      system.action(turn, action, this);
+  this._actionQueue.push([turn, action, this]);
+  try {
+    action.run(this);
+    if(action.result == null) {
+      throw new Error('Action should set result after running');
     }
-  }, this);
+  } finally {
+    while(firstCall && this._actionQueue.length > 0) {
+      var obj = this._actionQueue.shift();
+      /**
+       * This event is fired when the action executes.
+       * @event TurnEngine#action
+       * @property {Turn} 0 - The current Turn.
+       * @property {Action} 1 - The Action object.
+       */
+      this.emit('action', obj[0], obj[1], obj[2]);
+      this.systems.forEach(function(system) {
+        if(system.action) {
+          system.action(obj[0], obj[1], obj[2]);
+        }
+      }, this);
+    }
+  }
   return action;
 }
 
