@@ -1,6 +1,6 @@
 {
   "name": "ecstasy",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A fast Entity-Component-System framework",
   "main": "index.js",
   "scripts": {
