@@ -58,7 +58,8 @@ Action.prototype.serialize = function() {
 }
 
 Action.deserialize = function(engine, action) {
-  var obj = engine.a(action.name, action.entity, action.player, action.options);
+  var obj = engine.a(action.name, engine.e(action.entity), 
+    engine.e(action.player), action.options);
   obj.result = action.result;
   return obj;
 }

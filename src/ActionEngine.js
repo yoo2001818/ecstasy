@@ -15,12 +15,6 @@ function ActionEngine(isServer) {
    * @var {Boolean}
    */
   this.isServer = isServer || false;
-  /**
-   * An array holding all the {@link Action} used in the game.
-   * @var {Array}
-   * @see Action
-   */
-  this.actions = [];
   this._actions = {};
 }
 
@@ -107,8 +101,6 @@ ActionEngine.prototype.runAction = function(action) {
   }, this);
   if(turn) {
     turn.addAction(action);
-  } else {
-    this.actions.push(action);
   }
   action.run(this);
   /**
@@ -123,7 +115,7 @@ ActionEngine.prototype.runAction = function(action) {
       system.action(turn, action, this);
     }
   }, this);
-  return action.result;
+  return action;
 }
 
 if(typeof module !== 'undefined') {
