@@ -47,6 +47,22 @@ Action.prototype.run = function(engine) {
   throw new Error('Action.run is not implemented');
 }
 
+Action.prototype.serialize = function() {
+  return {
+    name: this.name,
+    entity: this.entity ? this.entity.id : null,
+    player: this.player ? this.player.id : null,
+    options: this.options,
+    result: this.result
+  };
+}
+
+Action.deserialize = function(engine, action) {
+  var obj = engine.a(action.name, action.entity, action.player, action.options);
+  obj.result = action.result;
+  return obj;
+}
+
 /**
  * Creates a new Action class that has given function as {@link Action#run}.
  * @static

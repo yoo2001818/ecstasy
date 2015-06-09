@@ -52,6 +52,8 @@ ActionEngine.prototype.aa = function(name, entity, player, options) {
 
 ActionEngine.prototype.defineAction = function(name, constructor) {
   this._actions[name] = constructor;
+  // TODO This isn't good way to do this, should be changed
+  constructor.prototype.name = name;
 }
 
 ActionEngine.prototype.getActionConstructor = function(name) {
