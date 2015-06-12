@@ -19,7 +19,7 @@ EntityBuilder.getEntityTemplate = function(key, template) {
   if(origin == null) return {};
   var obj = {};
   if(origin['prototype']) {
-    var protoObj = EntityBuilder.getEntityTemplate(origin['prototype']);
+    var protoObj = EntityBuilder.getEntityTemplate(origin['prototype'], template);
     deepCopy(protoObj, obj);
   }
   deepCopy(origin, obj);
