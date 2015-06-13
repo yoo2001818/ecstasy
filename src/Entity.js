@@ -76,6 +76,14 @@ Entity.prototype.create = function(key, args) {
   return this;
 }
 
+/**
+ * Executes Component related functions by its arguments.
+ * 
+ * If only a key is provided, it returns the Component with that ID.
+ * Otherwise, it creates the Component with the options.
+ * @param {String} key - The Component's key
+ * @param {Object} args - The options
+ */
 Entity.prototype.c = function(key, args) {
   if(args == null) return this.get(key);
   return this.create(key, args);

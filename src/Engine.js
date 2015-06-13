@@ -44,9 +44,8 @@ Engine.prototype.constructor = Engine;
 
 /**
  * Registers a {@link Component} type to the Engine.
- * This won't do anything if Component type is already registered.
  * @param key {String} - {@link Component}'s string key.
- * @param constructor {Object] - {@link Component}'s constructor.
+ * @param constructor {Function] - {@link Component}'s constructor.
  */
 Engine.prototype.registerComponent = function(key, constructor) {
   this._componentConstructors[key] = constructor;
@@ -56,6 +55,11 @@ Engine.prototype.registerComponent = function(key, constructor) {
   return this._componentPos ++;
 }
 
+/**
+ * Registers a {@link Component} type to the Engine.
+ * @param key {String} - {@link Component}'s string key.
+ * @param constructor {Function] - {@link Component}'s constructor.
+ */
 Engine.prototype.c = Engine.prototype.registerComponent;
 
 /**
@@ -156,6 +160,13 @@ Engine.prototype.createEntity = function() {
   return entity;
 }
 
+/**
+ * Executes Entity related functions by its arguments.
+ * 
+ * If no argument is provided, it returns new Entity.
+ * If a number is provided, it returns a Entity with that ID.
+ * Otherwise, it returns an array of Entity having provided list components.
+ */
 Engine.prototype.e = function(id) {
   if(arguments.length === 0) {
     return this.createEntity();
@@ -344,10 +355,24 @@ Engine.prototype.addSystem = function(key, system) {
   this._systemsSortRequired = true;
 }
 
+/**
+ * Returns a new SystemBuilder associated the Engine.
+ * @param key {String} - The System's string key to use.
+ * @returns {SystemBuilder} A new SystemBuilder
+ */
 Engine.prototype.createSystem = function(key) {
   return new SystemBuilder(key, this);
 }
 
+/**
+ * Executes System related functions by its arguments.
+ * 
+ * If a key is provided and the Engine doesn't have a system with that key, 
+ * it returns a SystemBuilder.
+ * If a key is provided and the Engine has a system with that key, it returns
+ * that system.
+ * If a key is provided and a system is provided, it registers the system.
+ */
 Engine.prototype.s = function(key, system) {
   if(system == null) {
     if(this._systemTable[key] == null) return this.createSystem(key);

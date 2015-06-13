@@ -47,6 +47,10 @@ Action.prototype.run = function(engine) {
   throw new Error('Action.run is not implemented');
 }
 
+/**
+ * Serializes the action.
+ * @returns {Object} The serialized Action object
+ */
 Action.prototype.serialize = function() {
   return {
     name: this.name,
@@ -57,6 +61,13 @@ Action.prototype.serialize = function() {
   };
 }
 
+/**
+ * Deserializes the action.
+ * @static
+ * @param {Engine} engine - The game engine.
+ * @param {Object} object - Serialized Action object.
+ * @returns {Action} The deserialized Action object
+ */
 Action.deserialize = function(engine, action) {
   var obj = engine.a(action.name, engine.e(action.entity), 
     engine.e(action.player), action.options);

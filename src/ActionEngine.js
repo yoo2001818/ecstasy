@@ -45,16 +45,34 @@ ActionEngine.prototype.aa = function(name, entity, player, options) {
   return this.runAction(this.createAction(name, entity, player, options));
 }
 
+/**
+ * Defines an {@link Action} type to the Engine.
+ * @param name {String} - The name of the Action.
+ * @param constructor {Function} - The constructor of the Action.
+ */
 ActionEngine.prototype.defineAction = function(name, constructor) {
   this._actions[name] = constructor;
   // TODO This isn't good way to do this, should be changed
   constructor.prototype.name = name;
 }
 
+/**
+ * Returns the {@link Action}'s construtor with specified name.
+ * @param name {String} - The name of the Action.
+ * @returns {Function} The constructor of the Action.
+ */
 ActionEngine.prototype.getActionConstructor = function(name) {
   return this._actions[name];
 }
 
+/**
+ * Creates a new {@link Action} using registered constructor.
+ * @param name {String} - The name of the Action.
+ * @param {Entity} entity - The entity associated with the action.
+ * @param {Entity} player - The player who requested the action.
+ * @param {Object} options - The arguments associated with the action.
+ * @returns {Action} The created Action.
+ */
 ActionEngine.prototype.createAction = function(name, entity, player, options) {
   return new (this.getActionConstructor(name))(this, entity, player, options);
 }
