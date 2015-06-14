@@ -57,8 +57,9 @@ Engine.prototype.registerComponent = function(key, constructor) {
 
 /**
  * Registers a {@link Component} type to the Engine.
+ * @function
  * @param key {String} - {@link Component}'s string key.
- * @param constructor {Function] - {@link Component}'s constructor.
+ * @param constructor {Function} - {@link Component}'s constructor.
  */
 Engine.prototype.c = Engine.prototype.registerComponent;
 

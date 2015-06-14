@@ -12,8 +12,9 @@ function Entity(engine) {
   EventEmitter.call(this);
   /**
    * The ID of this object.
-   * This will be given by Engine, and it shouldn't be edited.
-   * @readonly
+   * This will be given by Engine, and it shouldn't be edited after
+   * being added to the Engine.
+   * Otherwise, You can edit the value to what you want.
    * @var {Number}
    */
   this.id = null;
