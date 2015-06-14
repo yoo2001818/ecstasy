@@ -54,6 +54,14 @@ module.exports = function(grunt) {
       options: {
         force: true
       }
+    },
+    jsdoc: {
+      dist: {
+        src: ['src/**/*.js'],
+        options: {
+          destination: 'jsdoc'
+        }
+      }
     }
   });
 
@@ -61,7 +69,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-coveralls');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('default', ['browserify', 'uglify']);
+  grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('test', ['mochaTest', 'coveralls']);
 };
