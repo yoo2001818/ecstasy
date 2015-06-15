@@ -9,6 +9,11 @@ A fast Entity-Component-System framework for Javascript.
 Additonally it supports Action and Turns - it's really useful when you're making
 turn based strategy game or multiplayer game.
 
+Documentation
+=============
+
+You can find the documentation [here](http://yoo2001818.github.io/ecstasy/).
+
 Examples
 ========
 
