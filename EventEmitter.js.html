@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>ecstasy Source: EventEmitter.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">ecstasy</a>
+	</div>
+	<div class="navbar-collapse">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Action.html">Action</a></li><li><a href="ActionEngine.html">ActionEngine</a></li><li><a href="ActionSystem.html">ActionSystem</a></li><li><a href="BitSet.html">BitSet</a></li><li><a href="Component.html">Component</a></li><li><a href="ComponentGroup.html">ComponentGroup</a></li><li><a href="ComponentGroup.Builder.html">ComponentGroup.Builder</a></li><li><a href="Engine.html">Engine</a></li><li><a href="Entity.html">Entity</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="System.html">System</a></li><li><a href="Turn.html">Turn</a></li><li><a href="TurnEngine.html">TurnEngine</a></li><li><a href="TurnSystem.html">TurnSystem</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="ActionEngine.html#event:entityAdded">ActionEngine#event:entityAdded</a></li><li><a href="ActionEngine.html#event:entityRemoved">ActionEngine#event:entityRemoved</a></li><li><a href="ActionEngine.html#event:preAction">ActionEngine#event:preAction</a></li><li><a href="ComponentGroup.html#event:entityAdded">ComponentGroup#event:entityAdded</a></li><li><a href="ComponentGroup.html#event:entityRemoved">ComponentGroup#event:entityRemoved</a></li><li><a href="Engine.html#event:entityAdded">Engine#event:entityAdded</a></li><li><a href="Engine.html#event:entityRemoved">Engine#event:entityRemoved</a></li><li><a href="Entity.html#event:componentAdded">Entity#event:componentAdded</a></li><li><a href="Entity.html#event:componentRemoved">Entity#event:componentRemoved</a></li><li><a href="TurnEngine.html#event:action">TurnEngine#event:action</a></li><li><a href="TurnEngine.html#event:entityAdded">TurnEngine#event:entityAdded</a></li><li><a href="TurnEngine.html#event:entityRemoved">TurnEngine#event:entityRemoved</a></li><li><a href="TurnEngine.html#event:gameInit">TurnEngine#event:gameInit</a></li><li><a href="TurnEngine.html#event:preAction">TurnEngine#event:preAction</a></li><li><a href="TurnEngine.html#event:sequenceNext">TurnEngine#event:sequenceNext</a></li><li><a href="TurnEngine.html#event:turnNext">TurnEngine#event:turnNext</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#BITS_PER_BYTE">BITS_PER_BYTE</a></li><li><a href="global.html#BITS_PER_WORD">BITS_PER_WORD</a></li><li><a href="global.html#INITAL_SIZE">INITAL_SIZE</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+	</div>
+</div>
+</div>
+
+
+<div class="container">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+    		<h1 class="page-title">Source: EventEmitter.js</h1>
+			
+
+		<h1 class="page-title">Source: EventEmitter.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">/**
+ * This class allows to emit events like node.js.
+ * Basically it's equivalent to node.js EventEmitter.
+ * @constructor
+ */
+function EventEmitter() {
+  this._listeners = {};
+  this._onces = {};
+  this._thisObjs = {};
+}
+
+/**
+ * Registers a listener.
+ * @param event {String} - The name of the event.
+ * @param listener {Function} - The function to be triggered.
+ */
+EventEmitter.prototype.on = function(event, listener, thisObj) {
+  if(this._listeners[event] == null) {
+    this._listeners[event] = [];
+  }
+  if(this._onces[event] == null) {
+    this._onces[event] = [];
+  }
+  if(this._thisObjs[event] == null) {
+    this._thisObjs[event] = [];
+  }
+  this._listeners[event].push(listener);
+  this._thisObjs[event].push(thisObj);
+}
+
+/**
+ * Registers a one-time listener.
+ * The listener will be removed after being triggered once.
+ * @param event {String} - The name of the event.
+ * @param listener {Function} - The function to be triggered.
+ */
+EventEmitter.prototype.once = function(event, listener, thisObj) {
+  this.on(event, listener, thisObj);
+  this._onces[event].push(listener);
+}
+
+/**
+ * Removes the listener.
+ * @param event {String} - The name of the event.
+ * @param listener {Function} - The function to be removed.
+ */
+EventEmitter.prototype.removeListener = function(event, listener) {
+  if(this._listeners[event] == null) return;
+  var idx = this._listeners[event].indexOf(listener);
+  if(idx == -1) return;
+  this._listeners[event].splice(idx, 1);
+  this._thisObjs[event].splice(idx, 1);
+  if(this._onces[event] == null) return;
+  var idx = this._onces[event].indexOf(listener);
+  if(idx == -1) return;
+  this._onces[event].splice(idx, 1);
+}
+
+/**
+ * Removes all the listener with specified event type.
+ * If event parameter is not set, it will remove all the listener of all types.
+ * @param [event] {String} - The name of the event.
+ */
+EventEmitter.prototype.removeAllListeners = function(event) {
+  if(event) {
+    this._listeners[event] = [];
+    this._onces[event] = [];
+    this._thisObjs[event] = [];
+  } else {
+    this._listeners = {};
+    this._onces = {};
+    this._thisObjs = {};
+  }
+}
+
+/**
+ * Returns the array of listeners with specified event type.
+ * @param event {String} - The name of the event.
+ * @returns {Array} An array holding event listeners.
+ */
+EventEmitter.prototype.listeners = function(event) {
+  var array = this._listeners[event];
+  if(!array) return [];
+  return array;
+}
+
+/**
+ * Emits the event.
+ * This will trigger all the listener with that event type.
+ * You can supply listener function's arguments by appending
+ * arguments after the 'event' parameter.
+ * @param event {String} - The name of the event.
+ * @param args... - Arguments to supply to listeners.
+ */
+EventEmitter.prototype.emit = function(event) {
+  var args = [];
+  for(var i = 1; i &lt; arguments.length; ++i) {
+    args.push(arguments[i]);
+  }
+  var array = this._listeners[event];
+  var onceArray = this._onces[event];
+  var thisArray = this._thisObjs[event];
+  if(!array) return;
+  for(var i = 0; i &lt; array.length; ++i) {
+    var entry = array[i];
+    entry.apply(thisArray[i], args);
+    var onceIdx = onceArray.indexOf(entry);
+    if(onceIdx != -1) {
+      array.splice(i, 1);
+      thisArray.splice(i, 1);
+      onceArray.splice(onceIdx, 1);
+      i --;
+    }
+  }
+}
+
+if(typeof module !== 'undefined') {
+  module.exports = EventEmitter;
+}
+</pre>
+	</article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	ecstasy Copyright © 2015 The contributors to the ecstasy.
+	</span>
+	<br />
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+	on Mon Jun 15th 2015 using the <a
+	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<!--<script src="scripts/sunlight.js"></script>-->
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/bootstrap-dropdown.js"></script>
+<script src="scripts/toc.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "h1,h2,h3,h4",
+		showAndHide : false,
+		scrollTo    : "100px"
+	} );
+
+	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			lang = "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>ecstasy Source: ActionEngine.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">ecstasy</a>
+	</div>
+	<div class="navbar-collapse">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Action.html">Action</a></li><li><a href="ActionEngine.html">ActionEngine</a></li><li><a href="ActionSystem.html">ActionSystem</a></li><li><a href="BitSet.html">BitSet</a></li><li><a href="Component.html">Component</a></li><li><a href="ComponentGroup.html">ComponentGroup</a></li><li><a href="ComponentGroup.Builder.html">ComponentGroup.Builder</a></li><li><a href="Engine.html">Engine</a></li><li><a href="Entity.html">Entity</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="System.html">System</a></li><li><a href="Turn.html">Turn</a></li><li><a href="TurnEngine.html">TurnEngine</a></li><li><a href="TurnSystem.html">TurnSystem</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="ActionEngine.html#event:entityAdded">ActionEngine#event:entityAdded</a></li><li><a href="ActionEngine.html#event:entityRemoved">ActionEngine#event:entityRemoved</a></li><li><a href="ActionEngine.html#event:preAction">ActionEngine#event:preAction</a></li><li><a href="ComponentGroup.html#event:entityAdded">ComponentGroup#event:entityAdded</a></li><li><a href="ComponentGroup.html#event:entityRemoved">ComponentGroup#event:entityRemoved</a></li><li><a href="Engine.html#event:entityAdded">Engine#event:entityAdded</a></li><li><a href="Engine.html#event:entityRemoved">Engine#event:entityRemoved</a></li><li><a href="Entity.html#event:componentAdded">Entity#event:componentAdded</a></li><li><a href="Entity.html#event:componentRemoved">Entity#event:componentRemoved</a></li><li><a href="TurnEngine.html#event:action">TurnEngine#event:action</a></li><li><a href="TurnEngine.html#event:entityAdded">TurnEngine#event:entityAdded</a></li><li><a href="TurnEngine.html#event:entityRemoved">TurnEngine#event:entityRemoved</a></li><li><a href="TurnEngine.html#event:gameInit">TurnEngine#event:gameInit</a></li><li><a href="TurnEngine.html#event:preAction">TurnEngine#event:preAction</a></li><li><a href="TurnEngine.html#event:sequenceNext">TurnEngine#event:sequenceNext</a></li><li><a href="TurnEngine.html#event:turnNext">TurnEngine#event:turnNext</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#BITS_PER_BYTE">BITS_PER_BYTE</a></li><li><a href="global.html#BITS_PER_WORD">BITS_PER_WORD</a></li><li><a href="global.html#INITAL_SIZE">INITAL_SIZE</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+	</div>
+</div>
+</div>
+
+
+<div class="container">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+    		<h1 class="page-title">Source: ActionEngine.js</h1>
+			
+
+		<h1 class="page-title">Source: ActionEngine.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">var Engine = require('./Engine');
+ 
+/**
+ * Represents an action based game engine.
+ * It's like a normal ECS with Action.
+ * @constructor
+ * @extends Engine
+ * @param {Boolean} [isServer=false] - Whether if it's a server or not
+ * @see Action
+ */
+function ActionEngine(isServer) {
+  Engine.call(this);
+  /**
+   * A boolean contains whether if it's a server or not.
+   * @var {Boolean}
+   */
+  this.isServer = isServer || false;
+  this._actions = {};
+  this._actionQueue = [];
+}
+
+ActionEngine.prototype = Object.create(Engine.prototype);
+ActionEngine.prototype.constructor = ActionEngine;
+
+/* 
+- Define Action in Engine
+    engine.a('add', action)
+- Create Action
+    engine.a('add', player, entity, options)
+- Run Action
+    engine.a(action)
+ */
+
+ActionEngine.prototype.a = function(name, entity, player, options) {
+  if(typeof name !== 'string') {
+    return this.runAction(name);
+  }
+  if(arguments.length == 2 &amp;&amp; typeof entity == 'function') {
+    return this.defineAction(name, entity);
+  }
+  return this.createAction(name, entity, player, options);
+}
+
+ActionEngine.prototype.aa = function(name, entity, player, options) {
+  return this.runAction(this.createAction(name, entity, player, options));
+}
+
+/**
+ * Defines an {@link Action} type to the Engine.
+ * @param name {String} - The name of the Action.
+ * @param constructor {Function} - The constructor of the Action.
+ */
+ActionEngine.prototype.defineAction = function(name, constructor) {
+  this._actions[name] = constructor;
+  // TODO This isn't good way to do this, should be changed
+  constructor.prototype.name = name;
+}
+
+/**
+ * Returns the {@link Action}'s construtor with specified name.
+ * @param name {String} - The name of the Action.
+ * @returns {Function} The constructor of the Action.
+ */
+ActionEngine.prototype.getActionConstructor = function(name) {
+  return this._actions[name];
+}
+
+/**
+ * Creates a new {@link Action} using registered constructor.
+ * @param name {String} - The name of the Action.
+ * @param {Entity} entity - The entity associated with the action.
+ * @param {Entity} player - The player who requested the action.
+ * @param {Object} options - The arguments associated with the action.
+ * @returns {Action} The created Action.
+ */
+ActionEngine.prototype.createAction = function(name, entity, player, options) {
+  return new (this.getActionConstructor(name))(this, entity, player, options);
+}
+
+ActionEngine.prototype.getTurn = function() {
+  return null;
+}
+
+/**
+ * Runs the Action.
+ * Action shouldn't have run yet if {@link ActionEngine#isServer} is true,
+ * but it should have run on server and have {@link Action#result} if not.
+ * @param action {Action} - The Action to run.
+ * @fires ActionEngine#action
+ * @fires ActionEngine#preAction
+ */
+ActionEngine.prototype.runAction = function(action) {
+  var turn = this.getTurn();
+  if(this.isServer) {
+    if(action.result) {
+      throw new Error('Action has already run');
+    }
+  } else {
+    if(!action.result) {
+      var handled = false;
+      this.systems.forEach(function(system) {
+        if(system.sendAction) {
+          if(system.sendAction(turn, action, this)) handled = true;
+        }
+      }, this);
+      if(!handled) throw new Error('Action hasn\'t run on server yet');
+      return;
+    }
+  }
+  var firstCall = this._actionQueue.length == 0;
+  /**
+   * This event is fired before the action executes.
+   * @event ActionEngine#preAction
+   * @property {Action} 1 - The Action object.
+   */
+  this.emit('preAction', turn, action, this);
+  this.systems.forEach(function(system) {
+    if(system.preAction) {
+      system.preAction(turn, action, this);
+    }
+  }, this);
+  if(turn) {
+    turn.addAction(action);
+  }
+  this._actionQueue.push([turn, action, this]);
+  try {
+    action.run(this);
+    if(action.result == null) {
+      throw new Error('Action should set result after running');
+    }
+  } finally {
+    while(firstCall &amp;&amp; this._actionQueue.length > 0) {
+      var obj = this._actionQueue.shift();
+      /**
+       * This event is fired when the action executes.
+       * @event TurnEngine#action
+       * @property {Turn} 0 - The current Turn.
+       * @property {Action} 1 - The Action object.
+       */
+      this.emit('action', obj[0], obj[1], obj[2]);
+      this.systems.forEach(function(system) {
+        if(system.action) {
+          system.action(obj[0], obj[1], obj[2]);
+        }
+      }, this);
+    }
+  }
+  return action;
+}
+
+if(typeof module !== 'undefined') {
+  module.exports = ActionEngine;
+}
+</pre>
+	</article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	ecstasy Copyright © 2015 The contributors to the ecstasy.
+	</span>
+	<br />
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+	on Mon Jun 15th 2015 using the <a
+	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<!--<script src="scripts/sunlight.js"></script>-->
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/bootstrap-dropdown.js"></script>
+<script src="scripts/toc.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "h1,h2,h3,h4",
+		showAndHide : false,
+		scrollTo    : "100px"
+	} );
+
+	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			lang = "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+</body>
+</html>
