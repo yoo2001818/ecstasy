@@ -52,8 +52,7 @@ registered before. This is expected behavior.
 
 If the system with that key exist in the engine, it returns that System.
 
-If the system doesn't exist, it returns a new SystemBuilder with that
-key.
+If the system doesn't exist, it returns a new SystemBuilder with that key.
 
 ### engine.s(key, system)
 
@@ -67,8 +66,10 @@ Removes the System from the engine.
 
 ### engine.serialize()
 
-Returns serialized engine object. Systems and Components won't be included in
-serialized object, so you should prepare them before deserializing.
+Returns serialized engine object.
+
+Systems and Components won't be included in serialized object, so you should 
+prepare them before deserializing.
 
 ### engine.deserialize(object)
 
@@ -77,6 +78,8 @@ Deserializes the serialized object and places on the provided engine.
 ### engine.update(delta)
 
 Calls System.update(delta) on the systems.
+Delta should be the delay between two update() calls, but developers can use
+whatever they want.
 
 # Entity
 
@@ -111,4 +114,54 @@ Returns serialized entity object.
 
 Returns new deserialized Entity object.
 
+## Properties
 
+### entity.id
+
+The ID of the entity. 
+
+This will be given by Engine, and it shouldn't be edited after being added to 
+the Engine.
+
+# Component
+
+Component is just a plain old Javascript object, you can use anything you want.
+But you need to use serializable object if you're going to serialize the Engine.
+
+# System
+
+System is a collection of functions that is run by every event.
+
+If you don't define the function in the system, the Engine simply won't run 
+those functions.
+You can use plain old Javascript object holding functions as Systems, because
+System class doesn't have any defined methods that does something.
+
+## Functions
+
+### system.add(engine)
+
+Called when the system is added to the Engine.
+
+You should do initialization for the system in here, such as calling
+```javascript
+this.engine = engine;
+this.entities = engine.e('test');
+```
+
+### system.remove(engine)
+
+Called when the system is removed from the Engine.
+
+### system.update(delta)
+
+Called when the engine.update() is called.
+Delta should be the delay between two update() calls, but developers can use
+whatever they want.
+
+## Properties
+
+### system.priority
+
+Sets the priority of the system. Systems with lower priority will be executed
+first. Note that this doesn't set the priority of system.add or system.remove.
