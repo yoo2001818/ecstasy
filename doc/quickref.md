@@ -128,6 +128,11 @@ the Engine.
 Component is just a plain old Javascript object, you can use anything you want.
 But you need to use serializable object if you're going to serialize the Engine.
 
+Since `entity.c(key, options)` requires the constructor of the component
+added in engine, you won't be able to use that function if you're going to
+use regular objects. Use `entity.add(key, component)` instead, though it's not
+recommended.
+
 # System
 
 System is a collection of functions that is run by every event.
