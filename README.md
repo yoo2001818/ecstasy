@@ -12,7 +12,9 @@ turn based strategy game or multiplayer game.
 Documentation
 =============
 
-You can find the documentation [here](http://yoo2001818.github.io/ecstasy/).
+You can find quick reference
+[here](https://github.com/yoo2001818/ecstasy/blob/master/doc/quickref.md).
+You can find jsdoc documentation [here](http://yoo2001818.github.io/ecstasy/).
 
 Examples
 ========
