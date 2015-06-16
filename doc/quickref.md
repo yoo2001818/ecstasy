@@ -107,7 +107,7 @@ Removes the Component from the Entity.
 
 Returns serialized entity object.
 
-### Entity.deserialize(engine, data) <static>
+### Entity.deserialize(engine, data) -static-
 
 Returns new deserialized Entity object.
 
