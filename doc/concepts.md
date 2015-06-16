@@ -20,8 +20,8 @@ behavior or functionality.
 System
 ------
 
-System is a function that is run by every update (or events).
-it iterates through the list of Entities, and alters them if required.
+System is a collection of functions that is run by every update (or event).
+It iterates through the list of Entities, and alters them if required.
 
 Since iterating whole list of entities is expensive, Ecstasy provides a way to
 'cache' the list of required Entities: ComponentGroup.
