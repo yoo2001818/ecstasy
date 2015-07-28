@@ -33,7 +33,7 @@ EntityBuilder.buildEntity = function(engine, template) {
     var constructor = engine.getComponentConstructor(key);
     if(constructor) {
       var component = new constructor(template[key]);
-      entity.add(template[key], component);
+      entity.add(key, component);
     } else {
       throw new Error('Component '+key+' not found');
     }
