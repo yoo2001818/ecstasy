@@ -163,7 +163,7 @@ Engine.prototype.createEntity = function() {
 
 /**
  * Executes Entity related functions by its arguments.
- * 
+ *
  * If no argument is provided, it returns new Entity.
  * If a number is provided, it returns a Entity with that ID.
  * Otherwise, it returns an array of Entity having provided list components.
@@ -277,7 +277,7 @@ Engine.prototype.updateComponentGroup = function(entity) {
  * @see Entity
  */
 Engine.prototype.registerComponentGroup = function(componentGroup) {
-  if(componentGroup.id != null && 
+  if(componentGroup.id != null &&
       this._componentGroups[componentGroup.id] == componentGroup) {
     return this._componentGroupEntities[componentGroup.id];
   }
@@ -367,8 +367,8 @@ Engine.prototype.createSystem = function(key) {
 
 /**
  * Executes System related functions by its arguments.
- * 
- * If a key is provided and the Engine doesn't have a system with that key, 
+ *
+ * If a key is provided and the Engine doesn't have a system with that key,
  * it returns a SystemBuilder.
  * If a key is provided and the Engine has a system with that key, it returns
  * that system.
@@ -451,14 +451,19 @@ Engine.prototype.update = function(delta) {
  * load the systems on their own.
  * @return {Object} serialized Engine object
  */
-Engine.prototype.serialize = function() {
+Engine.prototype.toJSON = function() {
   var obj = {};
   obj.entities = this._entitiesArray.map(function(v) {
-    return v.serialize();
+    return v.toJSON();
   });
   obj.entityPos = this._entityPos;
+  // For future use
+  obj.systems = Object.keys(this._systemTable);
+  obj.components = Object.keys(this._componentConstructors);
   return obj;
 }
+
+Engine.prototype.serialize = Engine.prototype.toJSON;
 
 /**
  * Deserializes the Engine object and places on provided engine.
@@ -472,11 +477,13 @@ Engine.prototype.deserialize = function(data) {
   this.removeAllEntities();
   // Add entities and resets entityPos
   data.entities.forEach(function(v) {
-    var entity = Entity.deserialize(this, v);
+    var entity = Entity.fromJSON(this, v);
     this.addEntity(entity);
   }, this);
   this._entityPos = data.entityPos;
 }
+
+Engine.prototype.fromJSON = Engine.prototype.fromJSON;
 
 if(typeof module !== 'undefined') {
   module.exports = Engine;

@@ -79,7 +79,7 @@ Entity.prototype.create = function(key, args) {
 
 /**
  * Executes Component related functions by its arguments.
- * 
+ *
  * If only a key is provided, it returns the Component with that ID.
  * Otherwise, it creates the Component with the options.
  * @param {String} key - The Component's key
@@ -134,16 +134,21 @@ Entity.prototype.has = function(key) {
  * Components should be serializable in order to do this.
  * @return {Object} serialized Entity object
  */
-Entity.prototype.serialize = function() {
+Entity.prototype.toJSON = function() {
   var obj = {};
   obj.id = this.id;
   obj.components = {};
   for(var key in this.components) {
     var name = this._engine.getComponentName(key);
     obj.components[name] = this.components[key];
+    if(this.components[key].toJSON) {
+      obj.components[name] = this.components[key].toJSON();
+    }
   }
   return obj;
 }
+
+Entity.prototype.serialize = Entity.prototype.toJSON;
 
 /**
  * Returns new deserialized Entity object.
@@ -151,7 +156,7 @@ Entity.prototype.serialize = function() {
  * @param data {Object} serialized Entity object
  * @return {Entity} the Entity object
  */
-Entity.deserialize = function(engine, data) {
+Entity.fromJSON = function(engine, data) {
   var entity = new Entity(engine);
   entity.id = data.id;
   for(var name in data.components) {
@@ -159,6 +164,8 @@ Entity.deserialize = function(engine, data) {
   }
   return entity;
 }
+
+Entity.deserialize = Entity.fromJSON;
 
 if(typeof module !== 'undefined') {
   module.exports = Entity;

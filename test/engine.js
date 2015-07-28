@@ -452,6 +452,8 @@ describe('Engine', function() {
       engine.c('test', function() {this.data = '11'});
       engine.e().c('test', {});
       assert.deepEqual({
+        components: ['test'],
+        systems: [],
         entities: [
           {
             id: 0,
