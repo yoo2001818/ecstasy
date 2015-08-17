@@ -188,6 +188,21 @@ describe('Engine', function() {
     it('should get an entity with that id if a number is given', function() {
       assert.equal(entity, engine.e(0));
     });
+    it('should create entity with template if an object is given', function() {
+      engine.c('pos', function(options) {
+        this.x = options.x || 0;
+      });
+      entity = engine.e({
+        test: {},
+        pos: {
+          x: 127
+        }
+      });
+      assert.equal(entity.id, 1);
+      assert(entity.c('test'));
+      assert(entity.c('pos'));
+      assert.equal(entity.c('pos').x, 127);
+    });
     it('should call getEntitiesFor otherwise', function() {
       assert.deepEqual([entity], engine.e('test'));
     });

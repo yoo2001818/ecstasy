@@ -166,14 +166,24 @@ Engine.prototype.createEntity = function() {
  *
  * If no argument is provided, it returns new Entity.
  * If a number is provided, it returns a Entity with that ID.
+ * If an object is provided, it returns new Entity populated with the template.
  * Otherwise, it returns an array of Entity having provided list components.
  */
 Engine.prototype.e = function(id) {
   if(arguments.length === 0) {
     return this.createEntity();
-  }
-  if(typeof id === 'number') {
-    return this.getEntity(id);
+  } else if(arguments.length === 1) {
+    if(typeof id === 'number') {
+      return this.getEntity(id);
+    }
+    if(typeof id === 'object') {
+      var entity = this.createEntity();
+      // Create components as template
+      for(var key in id) {
+        entity.c(key, id[key]);
+      }
+      return entity;
+    }
   }
   return this.getEntitiesFor.apply(this, arguments);
 }
