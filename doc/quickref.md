@@ -21,6 +21,10 @@ Adds an empty Entity to the engine and returns it.
 
 Returns the Entity with that ID, or null if not found.
 
+### engine.e(template)
+
+Returns new Entity populated with the template.
+
 ### engine.e(components...)
 
 Returns the Entity having all the components in arguments.
@@ -62,13 +66,13 @@ Registers the System to the engine.
 
 Removes the System from the engine.
 
-## Etc 
+## Etc
 
 ### engine.serialize()
 
 Returns serialized engine object.
 
-Systems and Components won't be included in serialized object, so you should 
+Systems and Components won't be included in serialized object, so you should
 prepare them before deserializing.
 
 ### engine.deserialize(object)
@@ -118,9 +122,9 @@ Returns new deserialized Entity object.
 
 ### entity.id
 
-The ID of the entity. 
+The ID of the entity.
 
-This will be given by Engine, and it shouldn't be edited after being added to 
+This will be given by Engine, and it shouldn't be edited after being added to
 the Engine.
 
 # Component
@@ -137,7 +141,7 @@ recommended.
 
 System is a collection of functions that is run by every event.
 
-If you don't define the function in the system, the Engine simply won't run 
+If you don't define the function in the system, the Engine simply won't run
 those functions.
 You can use plain old Javascript object holding functions as Systems, because
 System class doesn't have any defined methods that does something.

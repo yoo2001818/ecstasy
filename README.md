@@ -36,20 +36,24 @@ engine.c('vel', function VelocityComponent(options) {
 });
 
 // Define systems
-engine.s('vel').add(function(engine) {
-  this.engine = engine;
-  this.entities = engine.e('pos', 'vel');
-}).update(function(delta) {
-  this.entities.forEach(function(entity) {
-    entity.c('pos').x += entity.c('vel').x;
-    entity.c('pos').y += entity.c('vel').y;
-  });
+engine.s('vel', {
+  add: function(engine) {
+    this.engine = engine;
+    this.entities = engine.e('pos', 'vel');
+  },
+  update: function(delta) {
+    this.entities.forEach(function(entity) {
+      entity.c('pos').x += entity.c('vel').x;
+      entity.c('pos').y += entity.c('vel').y;
+    });
+  }
 });
 
 // Define entities
-engine.e()
-  .c('pos', {x: 200, y: 200})
-  .c('vel', {x: 3, y: 3});
+engine.e({
+  pos: {x: 200, y: 200},
+  vel: {x: 3, y: 3}
+});
 
 setInterval(function() {
   engine.update(12);
